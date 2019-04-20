@@ -1,0 +1,3 @@
+version: "1"
+domain: fbsb.io
+repo: github.com/fbsb/pingdom-operator
