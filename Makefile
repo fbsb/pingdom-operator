@@ -4,6 +4,10 @@ IMG ?= controller:latest
 
 all: test manager
 
+# Vendor dependencies
+vendor: go.mod go.sum
+	GO111MODULE=on go mod vendor
+
 # Run tests
 test: generate fmt vet manifests
 	go test ./pkg/... ./cmd/... -coverprofile cover.out
