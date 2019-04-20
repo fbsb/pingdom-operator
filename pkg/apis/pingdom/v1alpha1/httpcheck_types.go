@@ -20,18 +20,24 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
-// NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
+type PingdomStatus string
+
+var (
+	StatusSuccess PingdomStatus = "Succeeded"
+	StatusFail    PingdomStatus = "Fail"
+)
 
 // HttpCheckSpec defines the desired state of HttpCheck
 type HttpCheckSpec struct {
 	Name string `json:"name"`
-	URL  string `json:"URL"`
+	URL  string `json:"url"`
 }
 
 // HttpCheckStatus defines the observed state of HttpCheck
 type HttpCheckStatus struct {
-	PingdomID string `json:"pingdomId"`
+	PingdomID     int           `json:"pingdomId,omitempty"`
+	PingdomStatus PingdomStatus `json:"pingdomStatus,omitempty"`
+	Error         string        `json:"error,omitempty"`
 }
 
 // +genclient

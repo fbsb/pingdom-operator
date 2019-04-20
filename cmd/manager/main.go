@@ -17,12 +17,15 @@ limitations under the License.
 package main
 
 import (
+	"errors"
 	"flag"
 	"os"
 
 	"github.com/fbsb/pingdom-operator/pkg/apis"
 	"github.com/fbsb/pingdom-operator/pkg/controller"
+	"github.com/fbsb/pingdom-operator/pkg/pingdom/httpcheck"
 	"github.com/fbsb/pingdom-operator/pkg/webhook"
+	"github.com/russellcardullo/go-pingdom/pingdom"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 	"sigs.k8s.io/controller-runtime/pkg/client/config"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
@@ -30,12 +33,41 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/runtime/signals"
 )
 
+var (
+	metricsAddr     string
+	pingdomUsername string
+	pingdomPassword string
+	pingdomApiKey   string
+)
+
 func main() {
-	var metricsAddr string
 	flag.StringVar(&metricsAddr, "metrics-addr", ":8080", "The address the metric endpoint binds to.")
+	flag.StringVar(&pingdomUsername, "pingdom-username", "", "The pingdom username.")
+	flag.StringVar(&pingdomPassword, "pingdom-password", "", "The pingdom password.")
+	flag.StringVar(&pingdomApiKey, "pingdom-api-key", "", "The pingdom API key.")
+
 	flag.Parse()
+
 	logf.SetLogger(logf.ZapLogger(false))
 	log := logf.Log.WithName("entrypoint")
+
+	pingdomConfig, err := getPingdomConfig()
+	if err != nil {
+		log.Error(err, "could not get pingdom config")
+		os.Exit(1)
+	}
+
+	pingdomClient, err := pingdom.NewClientWithConfig(pingdomConfig)
+	if err != nil {
+		log.Error(err, "could not create pingdom client")
+		os.Exit(1)
+	}
+
+	err = httpcheck.InitService(pingdomClient)
+	if err != nil {
+		log.Error(err, "could not initialize httpcheck service")
+		os.Exit(1)
+	}
 
 	// Get a config to talk to the apiserver
 	log.Info("setting up client for manager")
@@ -81,4 +113,43 @@ func main() {
 		log.Error(err, "unable to run the manager")
 		os.Exit(1)
 	}
+}
+
+func getPingdomConfig() (conf pingdom.ClientConfig, err error) {
+	username := flagOrEnv(pingdomUsername, "PINGDOM_USERNAME")
+	if username == "" {
+		err = errors.New("could not find pingdom username")
+		return
+	}
+
+	password := flagOrEnv(pingdomPassword, "PINGDOM_PASSWORD")
+	if password == "" {
+		err = errors.New("could not find pingdom password")
+		return
+	}
+
+	apiKey := flagOrEnv(pingdomApiKey, "PINGDOM_API_KEY")
+	if apiKey == "" {
+		err = errors.New("could not find pingdom api key")
+		return
+	}
+
+	conf.User = username
+	conf.Password = password
+	conf.APIKey = apiKey
+
+	return
+}
+
+func flagOrEnv(v string, env string) string {
+	if len(v) > 0 {
+		return v
+	}
+
+	e, ok := os.LookupEnv(env)
+	if ok && len(e) > 0 {
+		return e
+	}
+
+	return ""
 }

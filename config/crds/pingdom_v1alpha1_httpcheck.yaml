@@ -30,20 +30,23 @@ spec:
           type: object
         spec:
           properties:
-            URL:
-              type: string
             name:
+              type: string
+            url:
               type: string
           required:
           - name
-          - URL
+          - url
           type: object
         status:
           properties:
-            pingdomId:
+            error:
               type: string
-          required:
-          - pingdomId
+            pingdomId:
+              format: int64
+              type: integer
+            pingdomStatus:
+              type: string
           type: object
   version: v1alpha1
 status:
