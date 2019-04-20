@@ -26,7 +26,7 @@ require (
 	github.com/markbates/inflect v1.0.4 // indirect
 	github.com/modern-go/reflect2 v0.0.0-20180701023420-4b7aa43c6742 // indirect
 	github.com/onsi/ginkgo v1.8.0 // indirect
-	github.com/onsi/gomega v1.5.0 // indirect
+	github.com/onsi/gomega v1.5.0
 	github.com/pborman/uuid v0.0.0-20180906182336-adf5a7427709 // indirect
 	github.com/petar/GoLLRB v0.0.0-20130427215148-53be0d36a84c // indirect
 	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect
@@ -42,7 +42,7 @@ require (
 	go.uber.org/multierr v1.1.0 // indirect
 	go.uber.org/zap v1.9.1 // indirect
 	golang.org/x/crypto v0.0.0-20190418165655-df01cb2cc480 // indirect
-	golang.org/x/net v0.0.0-20190420063019-afa5a82059c6 // indirect
+	golang.org/x/net v0.0.0-20190420063019-afa5a82059c6
 	golang.org/x/oauth2 v0.0.0-20190402181905-9f3314589c9a // indirect
 	golang.org/x/sys v0.0.0-20190419153524-e8e3143a4f4a // indirect
 	golang.org/x/time v0.0.0-20190308202827-9d24e82272b4 // indirect
@@ -50,7 +50,7 @@ require (
 	google.golang.org/appengine v1.5.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.2.2 // indirect
-	k8s.io/api v0.0.0-20181213150558-05914d821849 // indirect
+	k8s.io/api v0.0.0-20181213150558-05914d821849
 	k8s.io/apiextensions-apiserver v0.0.0-20181213153335-0fe22c71c476 // indirect
 	k8s.io/apimachinery v0.0.0-20181127025237-2b1284ed4c93
 	k8s.io/client-go v0.0.0-20181213151034-8d9ed539ba31
