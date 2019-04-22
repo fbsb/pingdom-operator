@@ -1,8 +1,8 @@
 
 # Image URL to use all building/pushing image targets
-IMG ?= controller:latest
+IMG ?= fbsb/pingdom-operator:latest
 
-all: test manager
+all: vendor test manager
 
 # Vendor dependencies
 vendor: go.mod go.sum
@@ -24,14 +24,21 @@ run: generate fmt vet
 install: manifests
 	kubectl apply -f config/crds
 
-# Deploy controller in the configured Kubernetes cluster in ~/.kube/config
-deploy: manifests
-	kubectl apply -f config/crds
-	kustomize build config/default | kubectl apply -f -
+# Make secrets
+config/secret/pingdom-credentials.env: config/secret/pingdom-credentials.env.dist
+	cp config/secret/pingdom-credentials.env.dist config/secret/pingdom-credentials.env
 
-# Generate manifests e.g. CRD, RBAC etc.
-manifests:
-	go run vendor/sigs.k8s.io/controller-tools/cmd/controller-gen/main.go all
+secrets: config/secret/pingdom-credentials.env
+	@echo "Add your pingdom api credentials to config/secret/pingdom-credentials.env before deploying"
+
+# Deploy controller in the configured Kubernetes cluster in ~/.kube/config
+deploy:
+	kubectl apply -f config/namespace.yaml
+	kustomize build config | kubectl apply -f -
+
+remove:
+	kustomize build config | kubectl delete -f -
+	kubectl delete -f config/namespace.yaml
 
 # Run go fmt against code
 fmt:
@@ -48,11 +55,14 @@ ifndef GOPATH
 endif
 	go generate ./pkg/... ./cmd/...
 
+# Generate manifests e.g. CRD, RBAC etc.
+manifests:
+	go run vendor/sigs.k8s.io/controller-tools/cmd/controller-gen/main.go all
+
 # Build the docker image
 docker-build: test
 	docker build . -t ${IMG}
-	@echo "updating kustomize image patch file for manager resource"
-	sed -i'' -e 's@image: .*@image: '"${IMG}"'@' ./config/default/manager_image_patch.yaml
+	cd config && kustomize edit set image manager=${IMG}
 
 # Push the docker image
 docker-push:

@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: manager
+  namespace: system
+spec:
+  template:
+    spec:
+      terminationGracePeriodSeconds: 10
+      serviceAccountName: default
+      containers:
+      - name: manager
+        image: manager:latest
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            cpu: 100m
+            memory: 30Mi
+          requests:
+            cpu: 100m
+            memory: 20Mi
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: PINGDOM_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: credentials
+              key: PINGDOM_USERNAME
+        - name: PINGDOM_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: credentials
+              key: PINGDOM_PASSWORD
+        - name: PINGDOM_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: credentials
+              key: PINGDOM_API_KEY

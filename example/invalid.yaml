@@ -1,0 +1,7 @@
+apiVersion: pingdom.fbsb.io/v1alpha1
+kind: HttpCheck
+metadata:
+  name: invalid-url
+spec:
+  name: invalid
+  url: example.com:asd/test

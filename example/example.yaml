@@ -1,0 +1,7 @@
+apiVersion: pingdom.fbsb.io/v1alpha1
+kind: HttpCheck
+metadata:
+  name: example-httpcheck
+spec:
+  name: example
+  url: https://example.com

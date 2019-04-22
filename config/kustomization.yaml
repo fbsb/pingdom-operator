@@ -1,0 +1,34 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: pingdom-operator-system
+namePrefix: pingdom-operator-
+
+commonLabels:
+  control-plane: pingdom-operator
+  controller-tools.k8s.io: "1.0"
+
+#- crds/pingdom_v1alpha1_httpcheck.yaml
+resources:
+#- namespace.yaml
+- crds/pingdom_v1alpha1_httpcheck.yaml
+- rbac/rbac_role.yaml
+- rbac/rbac_role_binding.yaml
+- rbac/service_account.yaml
+- manager/deployment.yaml
+
+patchesStrategicMerge:
+- patch/manager_prometheus_metrics_patch.yaml
+
+secretGenerator:
+- env: secret/pingdom-credentials.env
+  name: credentials
+  type: opaque
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+images:
+- name: manager
+  newName: fbsb/pingdom-operator
+  newTag: latest
