@@ -8,9 +8,7 @@ commonLabels:
   control-plane: pingdom-operator
   controller-tools.k8s.io: "1.0"
 
-#- crds/pingdom_v1alpha1_httpcheck.yaml
 resources:
-#- namespace.yaml
 - crds/pingdom_v1alpha1_httpcheck.yaml
 - rbac/rbac_role.yaml
 - rbac/rbac_role_binding.yaml
